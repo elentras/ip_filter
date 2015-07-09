@@ -16,8 +16,9 @@ module IpFilter
 
     def fetch
       if DateTime.now > (@@cached_at + 1.day)
-        @@cached_at = DateTime.now
+        IpFilter::Configuration.update_method.call
         reset
+        @@cached_at = DateTime.now
       end
     end
 

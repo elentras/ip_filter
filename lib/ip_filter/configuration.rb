@@ -6,6 +6,9 @@ module IpFilter
         # Location of GeoLite database dat file.
         [:geo_ip_dat, "/lib/assets/GeoIP.dat"],
 
+        # Logic to use to update geoip.dat file
+        [:update_method, Proc.new { }],
+
         # Must be "country_code", "country_code2", "country_code3",
         # "country_name", "continent_code"
         [:ip_code_type, nil],
