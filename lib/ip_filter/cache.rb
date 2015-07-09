@@ -1,36 +1,23 @@
+require 'ip_filter/cache/dallistore'
+require 'ip_filter/cache/redis'
+
 module IpFilter
 
   # For now just a simple wrapper class for a Memcache client.
   class Cache
-
+    cattr_reader :cached_at
     attr_reader :prefix, :store
 
     def initialize(store, prefix)
       @store = store
       @prefix = prefix
+      @@cached_at ||= DateTime.now
     end
 
-    # Read from the Cache.
-    def [](ip)
-      case
-        when store.respond_to?(:read)
-          store.read key_for(ip)
-        when store.respond_to?(:[])
-          store[key_for(ip)]
-        when store.respond_to?(:get)
-          store.get key_for(ip)
-      end
-    end
-
-    # Write to the Cache.
-    def []=(ip, value)
-      case
-        when store.respond_to?(:write)
-          store.write key_for(ip), value
-        when store.respond_to?(:[]=)
-          store[key_for(ip)] = value
-        when store.respond_to?(:set)
-          store.set key_for(ip), value
+    def fetch
+      if DateTime.now > (@@cached_at + 1.day)
+        @@cached_at = DateTime.now
+        reset
       end
     end
 
