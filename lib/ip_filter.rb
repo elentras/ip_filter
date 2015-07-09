@@ -17,12 +17,14 @@ module IpFilter
 
   # The working Cache object, or +nil+ if none configured.
   def cache
-    if @cache.nil? && (store = Configuration.cache)
+    store = Configuration.cache
+    IpFilter::Cache.const_defined?(store.class.to_s)
+    if @cache.nil? &&
       begin
         store_klass = const_get("IpFilter::Cache::#{store.class}")
         @cache = store_klass.new(store, Configuration.cache_prefix)
       rescue => e
-        raise NotImplementedError, store
+        raise NotImplementedError, store.class
       end
     end
     @cache
