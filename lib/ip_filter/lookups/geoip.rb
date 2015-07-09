@@ -5,7 +5,7 @@ require 'geoip'
 module IpFilter::Lookup
   class Geoip < Base
 
-    private 
+    private
 
     def fetch_data(query, reverse = false)
       unless cache && data = cache[query]

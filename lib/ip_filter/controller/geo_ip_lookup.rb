@@ -14,7 +14,7 @@ module IpFilter
       #
       module ClassMethods
         def validate_ip(filter_options = {}, &block)
-          if block 
+          if block
             before_filter filter_options do |controller|
               controller.check_ip_location(block)
             end
@@ -26,7 +26,7 @@ module IpFilter
         def skip_validate_ip(filter_options = {})
           skip_before_filter(:check_ip_location, filter_options)
         end
-   
+
         def code_type
           @code_type ||= IpFilter::Configuration.ip_code_type.to_sym
         end
@@ -68,8 +68,8 @@ module IpFilter
         end
 
         def valid_ip?(ip)
-          #go through each IP range and validate IP against it 
-          Array.wrap(self.class.whitelist).any? do |ip_range| 
+          #go through each IP range and validate IP against it
+          Array.wrap(self.class.whitelist).any? do |ip_range|
             IPAddr.new(ip_range).include?( ip )
           end
         end

@@ -5,7 +5,6 @@ describe IpController do
   context "ip_validate" do
     before(:each) do
       IpFilter::Configuration.ip_whitelist = Proc.new { ["127.0.0.1/24"] }
-
     end
 
     it "should validate IP and raise error" do
