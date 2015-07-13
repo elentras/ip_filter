@@ -5,8 +5,8 @@ IpFilter is IP filtering solution for Ruby. Common use case for this is DRM. Use
 
 == Compatibility
 
-* Supports Ruby version: 1.9.2
-* Supports cache store: Memcache.
+* Supports Ruby version: 1.9.2, 2.2.0
+* Supports cache store: Memcache, Redis.
 * Supports Rails 3.
 
 
@@ -34,8 +34,11 @@ At the command prompt:
 
   # config/initializers/ip_filter.rb
 
-  # Location of GeoIP database file.
-  IpFilter::Configuration.geo_ip_dat = "lib/assets/GeoIP.dat"
+  # Location of GeoIP database files.
+  IpFilter::Configuration.data_folder = "lib/assets/"
+
+  # Level of filtering : Country, city...
+  IpFilter::Configuration.geoip_level = 'country'
 
   # Type of ip country code to compare by.
   IpFilter::Configuration.ip_code_type = "country_code2"
@@ -47,31 +50,45 @@ At the command prompt:
   IpFilter::Configuration.ip_whitelist = Proc.new { ["22.33.11.0/24", "2.3.1.4"] }
 
   # Exception to throw when IP is NOT allowed.
-  # Accepts a Proc for fine-grain control of the appropriate response. 
+  # Accepts a Proc for fine-grain control of the appropriate response.
   IpFilter::Configuration.ip_exception = Proc.new { raise Api::Exception::AuthorizationError.new("You region is blocked!") }
 
-  # Cache object (Memcache only).
+  # Cache object (Memcache or Redis).
   IpFilter::Configuration.cache = Rails.cache
 
+  ## MaxMind binary require a configuration file.
+  # If empty,
+  # Configuration path for geoipupdate binary
+  [:geoipupdate_config, '/usr/local/etc/GeoIP.conf'],
+
+  ## S3 credentials ##
+  # if access_key_id is nil, S3 isn't loaded.
+  [:access_key_id, nil],
+
+  # S3 Secret API key
+  [:secret_access_key, nil],
+
+  # S3 bucket name
+  [:bucket_name, 'ottsm-geoip']
 
 == Whitelist Ip
 
-See above configuration. 
+See above configuration.
 
 == Validate IP
 
-Add the following method to any controller to validate the <tt>Request#ip</tt>. 
-<tt>IpFilter::Configuration.ip_exception</tt> is a +Proc+ which is called when ip is NOT within the specified region/country code and NOT in IP whitelist. You can pass in filter options similar to those in +before_filter+. 
+Add the following method to any controller to validate the <tt>Request#ip</tt>.
+<tt>IpFilter::Configuration.ip_exception</tt> is a +Proc+ which is called when ip is NOT within the specified region/country code and NOT in IP whitelist. You can pass in filter options similar to those in +before_filter+.
 
   validate_ip
 
-You can also pass a block (with filter options) to be executed when validation of ip fails like so (defaults to <tt>IpFilter::Configuration.ip_exception</tt> proc if no block present): 
+You can also pass a block (with filter options) to be executed when validation of ip fails like so (defaults to <tt>IpFilter::Configuration.ip_exception</tt> proc if no block present):
 
-  validate_ip do 
+  validate_ip do
     raise Exception.new "Sorry access not granted!"
   end
 
-By default, loopback/private network addresses are allowed. You can disable this in like so: 
+By default, loopback/private network addresses are allowed. You can disable this in like so:
 
   #config/initializers/ip_filter.rb
 
@@ -113,6 +130,28 @@ Every <tt>IpFilter::Result</tt> object, +result+, provides the following data:
 * <tt>result.country_name</tt> - string
 * <tt>result.continent_code</tt> - string
 
+== Update Geoip database files
+
+To update Geoip database file, you just have to instantiate :
+
+  IpFilter::Providers::MaxMind.new
+
+This will update files located in <tt>IpFilter::Configuration.data_folder</tt>
+
+== S3
+
+The database files could also be uploaded or downloaded from S3.
+
+Upload to S3 :
+
+  IpFilter.s3.upload!
+
+Download from s3 :
+
+  IpFilter.s3.download!
+
+  These actions could be done exclusively if you provide you access key ID
+  and your secret access key in IpFilter configuration.
 
 == Caching
 
@@ -120,7 +159,7 @@ It's easy to cache ip results with IpFilter, just configure a cache store:
 
   IpFilter::Configuration.cache = Rails.cache
 
-Currently only Memcache is supported. 
+Currently only Memcache is supported.
 
 You can also set a custom prefix to be used for cache keys:
 
@@ -146,5 +185,5 @@ Ihor Ratsyborynskyy
 
 == Acknowledgements
 
-The architecture/design of this gem is heavily based off of Geocoder (by Alex Reisner https://github.com/alexreisner/geocoder). 
+The architecture/design of this gem is heavily based off of Geocoder (by Alex Reisner https://github.com/alexreisner/geocoder).
 Whereas Geocoder was built with 3rd party API resources in mind, IpFilter uses a local database file (.dat) similar to Geoip (by Clifford Heath https://github.com/cjheath/geoip).
