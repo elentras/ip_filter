@@ -2,6 +2,8 @@ require "ip_filter/configuration"
 require "ip_filter/cache"
 require "ip_filter/request"
 require "ip_filter/lookups/geoip"
+require "ip_filter/s3"
+require "ip_filter/providers/max_mind"
 
 module IpFilter
   extend self
@@ -23,6 +25,29 @@ module IpFilter
       @cache = store_klass.new(store, Configuration.cache_prefix)
     end
     @cache
+  end
+
+  def s3
+    return @s3 if not @s3.nil?
+    if Configuration.s3_access_key_id. present? and
+      Configuration.s3_secret_access_key.present?
+      return @s3 ||= IpFilter::S3.new
+    end
+    return @s3
+  end
+
+  def maxmind
+    @maxmind ||= IpFilter::Providers::MaxMind.new
+  end
+
+  def reference_file
+    return @reference_file if not @reference_file.nil?
+    level = Configuration.geoip_level.to_s
+    @reference_file = database_files.detect { |f| f.downcase.include?(level) }
+  end
+
+  def database_files
+    Dir[Configuration.data_folder + '/*.dat']
   end
 
   private
