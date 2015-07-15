@@ -1,4 +1,4 @@
-module IpFilter 
+module IpFilter
   module Controller
     module GeoIpLookup
 
@@ -52,7 +52,7 @@ module IpFilter
 
         def check_ip_location(block = nil)
           code  = request.location[self.class.code_type]
-          ip    = request.ip
+          ip    = request.remote_ip
 
           perform_check = self.class.allow_loopback? ? (code != "N/A") : true
 
