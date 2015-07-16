@@ -2,7 +2,6 @@ module IpFilter
   module Controller
     module GeoIpLookup
 
-
       # Mix below class methods into ActionController.
       def self.included(base)
         base.send :include, InstanceMethods

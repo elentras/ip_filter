@@ -19,7 +19,7 @@ module IpFilter
     end
 
     def fetch(force = false)
-      if force == true or DateTime.now > (@@cached_at + 1.day)
+      if force == true or DateTime.now > (@@cached_at + IpFilter::Configuration.refresh_delay) # seconds
         IpFilter::Configuration.update_method.call
         reset
         @@cached_at = DateTime.now

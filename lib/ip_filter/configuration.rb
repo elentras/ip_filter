@@ -46,7 +46,10 @@ module IpFilter
         [:s3_secret_access_key, nil],
 
         # S3 bucket name
-        [:s3_bucket_name, 'ip_filter-geoip']
+        [:s3_bucket_name, 'ip_filter-geoip'],
+
+        # Cache refresh delay, every 24 hours by default
+        [:refresh_delay, 1.day]
       ]
     end
 
