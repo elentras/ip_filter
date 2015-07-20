@@ -28,22 +28,24 @@ module IpFilter
     def upload!
       IpFilter.database_files.each do |file|
         file_name = File.basename(file)
+        puts "upload: #{file_name}"
         obj = @bucket.objects[file_name].write(:file => file)
         urls[file_name] = obj.url_for(:read, expires: Time.now.to_i + 840000)
+        puts urls[file_name]
       end
       urls
     end
 
-    def download!
-      @bucket.objects.each do |object|
-        target_file = File.join(IpFilter::Configuration.data_folder, object.key)
-        File.open(target_file, 'wb') do |file|
- 	        object.read do |chunk|
- 	           file.write(chunk)
- 	        end
+    def download!(name=nil)
+      if name == nil
+        name = File.basename(IpFilter::Configuration.geo_ip_dat)
+      end
+      geoip_db = @bucket.objects[name]
+      File.open(IpFilter::Configuration.geo_ip_dat, 'wb') do |file|
+        geoip_db.read do |chunk|
+          file.write(chunk)
         end
       end
     end
-
   end
 end

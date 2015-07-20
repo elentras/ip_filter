@@ -4,13 +4,12 @@ module IpFilter
     def self.options_and_defaults
       [
         # Folder containing GeoIP database files.
-        [:data_folder, "/lib/assets/"],
-
+        [:data_folder, "/tmp/geoip"],
+        [:geo_ip_dat, "data/GeoIP.dat"],
         # Level of filtering : Country, city...
-        [:geoip_level, 'country'],
 
         # Logic to use to update geoip.dat file
-        [:update_method, Proc.new { }],
+        [:update_method, Proc.new { IpFilter.s3.download!}],
 
         # Must be "country_code", "country_code2", "country_code3",
         # "country_name", "continent_code"
@@ -49,7 +48,7 @@ module IpFilter
         [:s3_bucket_name, 'ip_filter-geoip'],
 
         # Cache refresh delay, every 24 hours by default
-        [:refresh_delay, 1.day]
+        [:refresh_delay, 86400]
       ]
     end
 

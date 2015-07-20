@@ -7,7 +7,8 @@ require "ip_filter/providers/max_mind"
 
 module IpFilter
   extend self
-
+  attr_accessor :updated_at
+  attr_reader :lookups
   # Search for information about an address.
   def search(query)
     if ip_address?(query) && !blank_query?(query)
@@ -29,8 +30,8 @@ module IpFilter
 
   def s3
     return @s3 if not @s3.nil?
-    if Configuration.s3_access_key_id. present? and
-      Configuration.s3_secret_access_key.present?
+    if !Configuration.s3_access_key_id.nil? and
+        !Configuration.s3_secret_access_key.nil?
       return @s3 ||= IpFilter::S3.new
     end
     return @s3
@@ -41,10 +42,9 @@ module IpFilter
   end
 
   def reference_file
-    return @reference_file if not @reference_file.nil?
-    level = Configuration.geoip_level.to_s
-    @reference_file = database_files.detect { |f| f.downcase.include?(level) }
+    Configuration.geo_ip_dat
   end
+
 
   def database_files
     Dir[Configuration.data_folder + '/*.dat']
@@ -52,8 +52,19 @@ module IpFilter
 
   private
 
+  def refresh_db
+    IpFilter::Configuration.update_method.call
+    IpFilter.cache.reset if !IpFilter.cache.nil?
+    @updated_at = Time.now
+    @lookups = nil
+  end
+
   # Retrieve a Lookup object from the store.
   def get_lookup
+    @updated_at ||= Time.now
+    if Time.now.to_i > (@updated_at.to_i + IpFilter::Configuration.refresh_delay) # seconds      if force == true or
+      refresh_db
+    end
     @lookups ||= IpFilter::Lookup::Geoip.new
   end
 

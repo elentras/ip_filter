@@ -106,6 +106,3 @@ DEPENDENCIES
   ip_filter!
   rspec
   rspec-rails
-
-BUNDLED WITH
-   1.10.5
