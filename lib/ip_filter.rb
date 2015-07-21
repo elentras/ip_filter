@@ -8,11 +8,16 @@ require "ip_filter/providers/max_mind"
 module IpFilter
   extend self
   attr_accessor :updated_at
-  attr_reader :lookups
+  attr_reader :lookups, :refresh_inprogress
   # Search for information about an address.
   def search(query)
     if ip_address?(query) && !blank_query?(query)
-      get_lookup.search(query)
+      begin
+        get_lookup.search(query)
+      rescue
+        sleep(0.300) #wait to reload the file
+        get_lookup.search(query)
+      end
     else
       raise ArgumentError, "invalid address"
     end
@@ -53,17 +58,23 @@ module IpFilter
   private
 
   def refresh_db
-    IpFilter::Configuration.update_method.call
-    IpFilter.cache.reset if !IpFilter.cache.nil?
-    @updated_at = Time.now
-    @lookups = nil
+    puts "refresh geoip DB"
+    begin
+      IpFilter::Configuration.update_method.call
+      IpFilter.cache.reset if !IpFilter.cache.nil?
+      @updated_at = Time.now
+      @lookups = IpFilter::Lookup::Geoip.new
+    ensure
+      @refresh_inprogress = false
+    end
   end
 
   # Retrieve a Lookup object from the store.
   def get_lookup
     @updated_at ||= Time.now
-    if Time.now.to_i > (@updated_at.to_i + IpFilter::Configuration.refresh_delay) # seconds      if force == true or
-      refresh_db
+    if !@refresh_inprogress && (@lookups.nil? || Time.now.to_i > (@updated_at.to_i + IpFilter::Configuration.refresh_delay))
+      @refresh_inprogress = true
+      Thread.new {refresh_db}
     end
     @lookups ||= IpFilter::Lookup::Geoip.new
   end
