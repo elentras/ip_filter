@@ -3,8 +3,13 @@ module IpFilter
 
     def self.options_and_defaults
       [
-        # Location of GeoLite database dat file.
-        [:geo_ip_dat, "/lib/assets/GeoIP.dat"],
+        # Folder containing GeoIP database files.
+        [:data_folder, "/tmp/geoip"],
+        [:geo_ip_dat, "data/GeoIP.dat"],
+        # Level of filtering : Country, city...
+
+        # Logic to use to update geoip.dat file
+        [:update_method, Proc.new { IpFilter.s3.download!}],
 
         # Must be "country_code", "country_code2", "country_code3",
         # "country_name", "continent_code"
@@ -27,7 +32,23 @@ module IpFilter
         [:cache, nil],
 
         # prefix (string) to use for all cache keys
-        [:cache_prefix, "ip_filter:"]
+        [:cache_prefix, "ip_filter:"],
+
+        # Configuration path for geoipupdate binary
+        [:geoipupdate_config, '/usr/local/etc/GeoIP.conf'],
+
+        ## S3 credentials ##
+        # if access_key_id is nil, S3 isn't loaded.
+        [:s3_access_key_id, nil],
+
+        # S3 Secret API key
+        [:s3_secret_access_key, nil],
+
+        # S3 bucket name
+        [:s3_bucket_name, 'ip_filter-geoip'],
+
+        # Cache refresh delay, every 24 hours by default
+        [:refresh_delay, 86400]
       ]
     end
 

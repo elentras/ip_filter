@@ -25,7 +25,7 @@ module IpFilter
       ].freeze
 
 
-      # Query the GeoIP database for a given IP address, and returns information about 
+      # Query the GeoIP database for a given IP address, and returns information about
       # the region/country where the IP address is allocated.
       #
       # Takes a search string (eg: "205.128.54.202") for country info
@@ -34,7 +34,7 @@ module IpFilter
         results(query, false).map { |r| result_class.new(r) }
       end
 
-      private 
+      private
 
       # IpFilter::Result object or nil on timeout or other error.
       def results(query, reverse = false)

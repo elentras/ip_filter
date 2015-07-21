@@ -1,5 +1,11 @@
 Heroku Rails SaaS
 
+v0.0.4
+============================================
+Add Redis handling for caching.
+Add S3 Download/Upload for GeoipDat files
+Use geoipupdate to update GeoIp databases
+
 v0.0.3
 ============================================
 Add IP range support - Thanks Ihor!
