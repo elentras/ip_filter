@@ -12,7 +12,7 @@ module IpFilter
       # Read from the Cache.
       def [](ip)
         value = store.get(key_for(ip))
-        if value != 'null'
+        if !value.nil? && value != 'null'
           value = JSON.parse(value)
           return OpenStruct.new(value)
         end
