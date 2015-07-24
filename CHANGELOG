@@ -1,5 +1,9 @@
 IpFilter
 
+v0.6.0
+
+Fix bug with cache
+
 v0.0.4
 ============================================
 Add Redis handling for caching.
