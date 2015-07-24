@@ -25,12 +25,7 @@ module IpFilter
 
   # The working Cache object, or +nil+ if none configured.
   def cache
-    store = Configuration.cache
-    if @cache.nil? && (not store.nil?) && IpFilter::Cache.const_defined?(store.class.to_s)
-      store_klass = const_get("IpFilter::Cache::#{store.class}")
-      @cache = store_klass.new(store, Configuration.cache_prefix)
-    end
-    @cache
+    @cache ||= Configuration.cache
   end
 
   def s3

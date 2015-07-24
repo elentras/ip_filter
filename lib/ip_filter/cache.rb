@@ -8,7 +8,7 @@ module IpFilter
     attr_reader :cached_at
     attr_reader :prefix, :store
 
-    def initialize(store, prefix)
+    def initialize(store, prefix=IpFilter::Configuration.cache_prefix)
       @store = store
       @prefix = prefix
       @@cached_at ||= DateTime.now
