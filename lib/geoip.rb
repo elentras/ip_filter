@@ -122,9 +122,7 @@ class GeoIP
   end
 
   class ASN < Struct.new(:number, :asn)
-
     alias as_num number
-
   end
 
   # The Edition number that identifies which kind of database you've opened
@@ -238,7 +236,7 @@ class GeoIP
     # bogus data.  There was concern over whether the changes to an
     # application's behaviour were always correct, but this has been tested
     # using an exhaustive search of the top 16 bits of the IP address space.
-    # The records where the change takes effect contained *no* valid data. 
+    # The records where the change takes effect contained *no* valid data.
     # If you're concerned, email me, and I'll send you the test program so
     # you can test whatever IP range you think is causing problems,
     # as I don't care to undertake an exhaustive search of the 32-bit space.

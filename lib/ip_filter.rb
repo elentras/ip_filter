@@ -2,7 +2,7 @@ require "ip_filter/configuration"
 require "ip_filter/cache"
 require "ip_filter/request"
 require "ip_filter/lookups/geoip"
-require "ip_filter/s3"
+require "ip_filter/providers/s3"
 require "ip_filter/providers/max_mind"
 
 module IpFilter

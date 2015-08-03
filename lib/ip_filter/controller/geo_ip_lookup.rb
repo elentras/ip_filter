@@ -63,7 +63,7 @@ module IpFilter
         end
 
         def valid_code?(code)
-          Array.wrap(self.class.codes).include?(code)
+          code.in? self.class.codes
         end
 
         def valid_ip?(ip)

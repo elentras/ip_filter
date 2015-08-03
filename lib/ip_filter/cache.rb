@@ -11,7 +11,7 @@ module IpFilter
     def initialize(store, prefix=IpFilter::Configuration.cache_prefix)
       @store = store
       @prefix = prefix
-      @@cached_at ||= DateTime.now
+      @cached_at ||= DateTime.now
     end
 
     # Cache key for a given URL.

@@ -13,8 +13,7 @@ module IpFilter
       def [](ip)
         value = store.get(key_for(ip))
         if !value.nil? && value != 'null'
-          value = JSON.parse(value)
-          return OpenStruct.new(value)
+          return JSON.parse(value)
         end
         return nil
       end

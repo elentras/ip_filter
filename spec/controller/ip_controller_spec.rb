@@ -1,5 +1,24 @@
 require 'spec_helper'
-require 'dummy'
+require 'action_controller'
+require 'ip_filter'
+require 'ip_filter/controller/geo_ip_lookup'
+
+class IpController < ::ActionController::Base
+  include IpFilter::Controller::GeoIpLookup
+  include IpFilter::Request
+
+  validate_ip
+  skip_validate_ip :only => [:test_action_skip]
+
+  def test_action
+    render :text => "Testing test output"
+  end
+
+  def test_action_skip
+    render :text => "Testing test output"
+  end
+
+end
 
 describe IpController do
   context "ip_validate" do
@@ -38,8 +57,6 @@ describe IpController do
         action_call(IpController, :test_action_skip, :ip => '146.243.3.83')
       }.to_not raise_error
     end
-
-
 
   end
 
