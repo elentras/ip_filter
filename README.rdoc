@@ -34,42 +34,77 @@ At the command prompt:
 
   # config/initializers/ip_filter.rb
 
-  # Location of GeoIP database files.
-  IpFilter::Configuration.data_folder = "lib/assets/"
+  IpFilter.configure do |config|
+    # Location of GeoIP database files.
+    config.data_folder = "lib/assets/"
 
-  # Level of filtering : Country, city...
-  IpFilter::Configuration.geoip_level = 'country'
+    # Level of filtering : Country, city...
+    config.geoip_level = 'country'
 
-  # Type of ip country code to compare by.
-  IpFilter::Configuration.ip_code_type = "country_code2"
+    # Type of ip country code to compare by.
+    config.ip_code_type = "country_code2"
 
-  # Accepts a proc that must return an array with corresponding format as :ip_code_type
-  IpFilter::Configuration.ip_codes = Proc.new { ["FI", "US", "GB"] }
+    # Accepts a proc that must return an array with corresponding format as :ip_code_type
+    config.ip_codes = Proc.new { ["FI", "US", "GB"] }
 
-  # Accepts a proc that must return an array of IPs or IP range to
-  IpFilter::Configuration.ip_whitelist = Proc.new { ["22.33.11.0/24", "2.3.1.4"] }
+    # Accepts a proc that must return an array of IPs or IP range to
+    config.ip_whitelist = Proc.new { ["22.33.11.0/24", "2.3.1.4"] }
 
-  # Exception to throw when IP is NOT allowed.
-  # Accepts a Proc for fine-grain control of the appropriate response.
-  IpFilter::Configuration.ip_exception = Proc.new { raise Api::Exception::AuthorizationError.new("You region is blocked!") }
+    # Exception to throw when IP is NOT allowed.
+    # Accepts a Proc for fine-grain control of the appropriate response.
+    config.ip_exception = Proc.new { raise Api::Exception::AuthorizationError.new("You region is blocked!") }
 
-  # Cache object (Memcache or Redis).
-  IpFilter::Configuration.cache = Rails.cache
+    # Cache object (Memcache or Redis).
+    config.cache = Rails.cache
 
-  ## MaxMind binary require a configuration file.
-  # If empty,
-  # Configuration path for geoipupdate binary
-  [:geoipupdate_config, '/usr/local/etc/GeoIP.conf'],
+    ## MaxMind binary require a configuration file.
+    # If empty,
+    # Configuration path for geoipupdate binary
+    config.geoipupdate_config = '/usr/local/etc/GeoIP.conf'
 
-  ## S3 credentials ##
-  # if access_key_id is nil, S3 isn't loaded.
-  [:access_key_id, nil],
+    ## S3 credentials ##
+    # if access_key_id is nil, S3 isn't loaded.
+    config.access_key_id = nil
 
-  # S3 Secret API key
-  [:secret_access_key, nil],
+    # S3 Secret API key
+    config.secret_access_key = nil
 
-  # S3 bucket name
-  [:bucket_name, 'ottsm-geoip']
+    # S3 bucket name
+    config.bucket_name = 'ottsm-geoip'
+  end
+
+=== Default Values
+
++data_folder+           : "/tmp/geoip"
+
++geo_ip_dat+            : data/GeoIP.dat
+
++geoip_level+           : :country
+
++update_method+         : Proc {}
+
++ip_code_type+          : nil
++ip_codes+              : Proc {}
+
++ip_whitelist+          : Proc {}
+
++ip_exception+          : Proc {}
+
++allow_loopback+        : true
+
++cache+                 : nil
+
++cache_prefix+          : 'ip_filter:'
+
++geoipupdate_config+    : '/usr/local/etc/GeoIP.conf'
+
++s3_access_key_id+      : nil
+
++s3_secret_access_key+  : nil
+
++s3_bucket_name+        : 'ip_filter-geoip'
+
++refresh_delay+         : 86400
 
 == Whitelist Ip
 
@@ -92,7 +127,9 @@ By default, loopback/private network addresses are allowed. You can disable this
 
   #config/initializers/ip_filter.rb
 
-  IpFilter::Configuration.allow_loopback = false
+  IpFilter.configure do |config|
+    config.allow_loopback = false
+  end
 
 
 == Skip validation of IP
@@ -157,13 +194,17 @@ Download from s3 :
 
 It's easy to cache ip results with IpFilter, just configure a cache store:
 
-  IpFilter::Configuration.cache = Rails.cache
+  IpFilter.configure do |config|
+    config.cache = Rails.cache
+  end
 
-Currently only Memcache is supported.
+Currently only Memcache and redis are supported.
 
 You can also set a custom prefix to be used for cache keys:
 
-  IpFilter::Configuration.cache_prefix = "..."
+  IpFilter.configure do |config|
+    config.cache_prefix = "whatever:"
+  end
 
 By default the prefix is <tt>ip_filter:</tt>
 
@@ -181,7 +222,7 @@ This returns an array of <tt>IpFilter::Result</tt> objects. Please see above and
 == Contributors
 
 Ihor Ratsyborynskyy
-
+Jeremy Mortelette
 
 == Acknowledgements
 
