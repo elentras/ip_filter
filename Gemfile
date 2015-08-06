@@ -10,7 +10,6 @@ group :test, :development do
   gem 'rspec'
   gem 'rspec-rails'
   gem 'fuubar'
-  gem 'pry-byebug'
 
   # Cache test require these gems
   gem 'fakeredis'
