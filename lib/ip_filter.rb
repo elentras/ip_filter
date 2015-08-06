@@ -53,7 +53,6 @@ module IpFilter
   private
 
   def refresh_db
-    puts "refresh geoip DB"
     begin
       IpFilter::Configuration.update_method.call
       IpFilter.cache.reset if !IpFilter.cache.nil?

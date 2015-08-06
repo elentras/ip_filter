@@ -39,7 +39,6 @@ describe IpFilter::Cache::Redis do
 
     it "should return result from cache" do
       expected_cache = subject.store.keys("#{prefix}:55.10.220.10")
-      puts expected_cache.inspect
       expect( expected_cache ).to be_empty
       expect( expected_cache ).not_to include post_saved_ip
     end

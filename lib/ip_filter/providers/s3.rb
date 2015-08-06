@@ -29,10 +29,8 @@ module IpFilter
       def upload!
         IpFilter.database_files.each do |file|
           file_name = File.basename(file)
-          puts "upload: #{file_name}"
           obj = @bucket.objects[file_name].write(:file => file)
           urls[file_name] = obj.url_for(:read, expires: Time.now.to_i + 840000)
-          puts urls[file_name]
         end
         urls
       end
