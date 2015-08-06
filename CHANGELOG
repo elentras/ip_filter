@@ -1,5 +1,11 @@
 IpFilter
 
+v0.7.0
+
+Add missing tests
+Enhance Configuration handling
+Clean debug messages
+
 v0.6.0
 
 Fix bug with cache
