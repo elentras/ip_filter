@@ -8,7 +8,7 @@ describe IpFilter::Cache::DalliStore do
   extend EnableDallistoreCache
   activate_dallistore!
 
-  subject { described_class.new(IpFilter::Configuration.cache) }
+  subject { described_class.new(IpFilter.Configuration.cache) }
 
   it { expect respond_to(:reset).with(0).arguments }
   it { expect respond_to(:[]).with(1).arguments }

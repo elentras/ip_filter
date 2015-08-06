@@ -4,12 +4,14 @@ require 'ip_filter/cache/redis'
 require 'spec_helper'
 
 describe IpFilter::Cache::Redis do
-  let!(:prefix) { IpFilter::Configuration.cache_prefix = 'ip_filter_test:' }
-
   extend EnableRedisCache
   activate_redis!
 
-  subject { described_class.new(IpFilter::Configuration.cache, prefix) }
+  let!(:prefix) do
+    IpFilter.configuration { |c| c.cache_prefix = 'ip_filter_test:' }
+  end
+
+  subject { described_class.new(IpFilter.configuration.cache, prefix) }
 
   it { expect respond_to(:reset).with(0).arguments }
   it { expect respond_to(:[]).with(1).arguments }
@@ -23,7 +25,7 @@ describe IpFilter::Cache::Redis do
       IpFilter.search('200.10.220.10')
     end
 
-    let!(:keys) { IpFilter::Configuration.cache.keys("#{prefix}*") }
+    let!(:keys) { IpFilter.configuration.cache.keys("ip_filter_test:*") }
 
     it "should drop all existing cache keys" do
       subject.reset
