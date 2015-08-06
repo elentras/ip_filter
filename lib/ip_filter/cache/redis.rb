@@ -5,8 +5,8 @@ module IpFilter
     class Redis < IpFilter::Cache
 
       def reset
-        keys = IpFilter::Configuration.cache.keys("#{@prefix}*")
-        IpFilter::Configuration.cache.del keys if not keys.empty?
+        keys = store.keys("#{@prefix}*")
+        store.del keys if not keys.empty?
       end
 
       # Read from the Cache.
