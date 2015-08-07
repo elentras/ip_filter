@@ -9,7 +9,7 @@ module IpFilter
         # Level of filtering : Country, city...
 
         # Logic to use to update geoip.dat file
-        [:update_method, Proc.new { IpFilter.s3.download!}],
+        [:update_method, Proc.new { }],
 
         # Must be "country_code", "country_code2", "country_code3",
         # "country_name", "continent_code"

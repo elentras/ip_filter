@@ -2,7 +2,7 @@ require "ip_filter/configuration"
 require "ip_filter/cache"
 require "ip_filter/request"
 require "ip_filter/lookups/geoip"
-require "ip_filter/s3"
+require "ip_filter/providers/s3"
 require "ip_filter/providers/max_mind"
 
 module IpFilter
@@ -11,7 +11,7 @@ module IpFilter
   attr_reader :lookups, :refresh_inprogress
   # Search for information about an address.
   def search(query)
-    if ip_address?(query) && !blank_query?(query)
+    if ip_address?(query) && !query.blank?
       begin
         get_lookup.search(query)
       rescue
@@ -53,7 +53,6 @@ module IpFilter
   private
 
   def refresh_db
-    puts "refresh geoip DB"
     begin
       IpFilter::Configuration.update_method.call
       IpFilter.cache.reset if !IpFilter.cache.nil?
@@ -80,11 +79,6 @@ module IpFilter
   # dot-delimited numbers.
   def ip_address?(value)
     !!value.to_s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(\/\d{1,2}){0,1}$/)
-  end
-
-  # Checks if value is blank.
-  def blank_query?(value)
-    !!value.to_s.match(/^\s*$/)
   end
 end
 

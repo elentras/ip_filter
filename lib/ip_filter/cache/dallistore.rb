@@ -9,7 +9,7 @@ module IpFilter
 
       # Read from the Cache.
       def [](ip)
-        case
+        result = case
           when store.respond_to?(:read)
             store.read key_for(ip)
           when store.respond_to?(:[])
@@ -17,6 +17,7 @@ module IpFilter
           when store.respond_to?(:get)
             store.get key_for(ip)
         end
+        value = JSON.parse(value) if value
       end
 
       # Write to the Cache.
@@ -30,6 +31,7 @@ module IpFilter
             store.set key_for(ip), value
         end
       end
+
 
     end
   end

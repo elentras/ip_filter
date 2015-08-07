@@ -5,16 +5,15 @@ module IpFilter
     class Redis < IpFilter::Cache
 
       def reset
-        keys = IpFilter::Configuration.cache.keys("#{@prefix}*")
-        IpFilter::Configuration.cache.del keys if not keys.empty?
+        keys = store.keys("#{@prefix}*")
+        store.del keys if not keys.empty?
       end
 
       # Read from the Cache.
       def [](ip)
         value = store.get(key_for(ip))
         if !value.nil? && value != 'null'
-          value = JSON.parse(value)
-          return OpenStruct.new(value)
+          return JSON.parse(value)
         end
         return nil
       end

@@ -6,6 +6,10 @@ require 'rspec'
 require 'rspec/rails'
 require 'ip_filter'
 
+# Load support helpers
+require 'support/enable_dallistore_cache'
+require 'support/enable_redis_cache'
+
 # Configure RSpec
 RSpec.configure do |config|
   # config.include Rack::Test::Methods
@@ -14,13 +18,15 @@ end
 #Configure IP filter gem
 
 # Location of GeoIP database file.
-IpFilter::Configuration.data_folder = File.expand_path('../GeoIP/', __FILE__)
+IpFilter::Configuration.data_folder = File.expand_path('../fixtures', __FILE__)
+
+IpFilter::Configuration.geo_ip_dat = File.expand_path('../fixtures/GeoIP.dat', __FILE__)
 
 # Type of ip country code to compare by.
 IpFilter::Configuration.ip_code_type = "country_code2"
 
 # Must be of the corresponding format as :ip_code_type
-IpFilter::Configuration.ip_codes = Proc.new { ["country_code2"]}
+IpFilter::Configuration.ip_codes = Proc.new { ["country_code2"] }
 
 # Whitelist of IPs
 IpFilter::Configuration.ip_whitelist = Proc.new { ["127.0.0.1/24"] }
@@ -32,10 +38,10 @@ IpFilter::Configuration.ip_exception = Proc.new { raise Exception.new('GeoIP: IP
 # Cache object (Memcache only).
 IpFilter::Configuration.cache = nil
 
-#--------------------------------------------------------------------------------------------
+# Stub Rack::Request and preload IpFilter::Request to get IP location as a request's attribute.
+Rack::Request.send :include, IpFilter::Request
 
 def action_call(controller, action, opts)
-
   env = Rack::MockRequest.env_for('/', 'REMOTE_ADDR' => opts[:ip] || '127.0.0.1')
   status, headers, body = controller.action(action).call(env)
   response = ActionDispatch::TestResponse.new(status, headers, body)
