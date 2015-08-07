@@ -27,19 +27,19 @@ module IpFilter
         end
 
         def code_type
-          @code_type ||= IpFilter::Configuration.ip_code_type.to_sym
+          @code_type ||= IpFilter.configuration.ip_code_type.to_sym
         end
 
         def codes
-          IpFilter::Configuration.ip_codes.call
+          IpFilter.configuration.ip_codes.call
         end
 
         def whitelist
-          IpFilter::Configuration.ip_whitelist.call
+          IpFilter.configuration.ip_whitelist.call
         end
 
         def allow_loopback?
-          @allow_loopback ||= IpFilter::Configuration.allow_loopback
+          @allow_loopback ||= IpFilter.configuration.allow_loopback
         end
       end
 
@@ -57,7 +57,7 @@ module IpFilter
 
           if perform_check
             unless valid_code?(code) || valid_ip?(ip)
-              block ? block.call : IpFilter::Configuration.ip_exception.call
+              block ? block.call : IpFilter.configuration.ip_exception.call
             end
           end
         end

@@ -9,6 +9,20 @@ module IpFilter
   extend self
   attr_accessor :updated_at
   attr_reader :lookups, :refresh_inprogress
+
+
+  # Better configuration handling ( like Pros !)
+  class << self
+    attr_accessor :configuration
+  end
+
+  def self.configure
+    self.configuration ||= IpFilter::Configuration.new
+    yield(configuration)
+  end
+
+  # Back to IpFilter job
+
   # Search for information about an address.
   def search(query)
     if ip_address?(query) && !query.blank?
@@ -25,13 +39,13 @@ module IpFilter
 
   # The working Cache object, or +nil+ if none configured.
   def cache
-    @cache ||= Configuration.cache
+    @cache ||= configuration.cache
   end
 
   def s3
     return @s3 if not @s3.nil?
-    if !Configuration.s3_access_key_id.nil? and
-        !Configuration.s3_secret_access_key.nil?
+    if !configuration.s3_access_key_id.nil? and
+        !configuration.s3_secret_access_key.nil?
       return @s3 ||= IpFilter::S3.new
     end
     return @s3
@@ -42,19 +56,19 @@ module IpFilter
   end
 
   def reference_file
-    Configuration.geo_ip_dat
+    configuration.geo_ip_dat
   end
 
 
   def database_files
-    Dir[Configuration.data_folder + '/*.dat']
+    Dir[configuration.data_folder + '/*.dat']
   end
 
   private
 
   def refresh_db
     begin
-      IpFilter::Configuration.update_method.call
+      configuration.update_method.call
       IpFilter.cache.reset if !IpFilter.cache.nil?
       @updated_at = Time.now
       @lookups = IpFilter::Lookup::Geoip.new
@@ -66,7 +80,7 @@ module IpFilter
   # Retrieve a Lookup object from the store.
   def get_lookup
     @updated_at ||= Time.now
-    if !@refresh_inprogress && (@lookups.nil? || Time.now.to_i > (@updated_at.to_i + IpFilter::Configuration.refresh_delay))
+    if !@refresh_inprogress && (@lookups.nil? || Time.now.to_i > (@updated_at.to_i + IpFilter.configuration.refresh_delay))
       @refresh_inprogress = true
       Thread.new {refresh_db}
     end

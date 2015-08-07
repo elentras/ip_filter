@@ -7,10 +7,10 @@ module IpFilter
       attr_accessor :remote, :bucket_name, :urls
 
       def initialize
-        @bucket_name = IpFilter::Configuration.s3_bucket_name
+        @bucket_name = IpFilter.configuration.s3_bucket_name
         AWS.config(
-          :access_key_id => IpFilter::Configuration.s3_access_key_id,
-          :secret_access_key => IpFilter::Configuration.s3_secret_access_key
+          :access_key_id => IpFilter.configuration.s3_access_key_id,
+          :secret_access_key => IpFilter.configuration.s3_secret_access_key
         )
         @remote = AWS::S3.new
         @bucket = create_bucket
@@ -37,10 +37,10 @@ module IpFilter
 
       def download!(name = nil)
         if name.nil?
-          name = File.basename(IpFilter::Configuration.geo_ip_dat)
+          name = File.basename(IpFilter.configuration.geo_ip_dat)
         end
         geoip_db = @bucket.objects[name]
-        File.open(IpFilter::Configuration.geo_ip_dat, 'wb') do |file|
+        File.open(IpFilter.configuration.geo_ip_dat, 'wb') do |file|
           geoip_db.read do |chunk|
             file.write(chunk)
           end

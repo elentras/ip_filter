@@ -5,11 +5,11 @@ module EnableRedisCache
     let(:cache) { Redis.new }
 
     before do
-      IpFilter::Configuration.stub(:cache).and_return(cache)
+      IpFilter.configuration.stub(:cache).and_return(cache)
     end
 
     after do
-      IpFilter::Configuration.unstub(:cache)
+      IpFilter.configuration.unstub(:cache)
     end
 
   end

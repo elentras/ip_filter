@@ -22,11 +22,11 @@ module IpFilter
       end
 
       def config
-        @config ||= IpFilter::Configuration.geoipupdate_config
+        @config ||= IpFilter.configuration.geoipupdate_config
       end
 
       def folder
-        @folder ||= IpFilter::Configuration.data_folder
+        @folder ||= IpFilter.configuration.data_folder
       end
 
       def refresh_file_list!
