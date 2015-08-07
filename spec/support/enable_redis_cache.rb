@@ -5,11 +5,11 @@ module EnableRedisCache
     let(:cache) { Redis.new }
 
     before do
-      IpFilter::Configuration.stub(:cache).and_return(cache)
+      allow(IpFilter.configuration).to receive_messages(cache: cache)
     end
 
     after do
-      IpFilter::Configuration.unstub(:cache)
+      allow(IpFilter.configuration).to receive_messages(cache: nil)
     end
 
   end
