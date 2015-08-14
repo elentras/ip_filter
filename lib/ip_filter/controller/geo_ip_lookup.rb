@@ -51,7 +51,7 @@ module IpFilter
 
         def check_ip_location(block = nil)
           code  = request.location[self.class.code_type]
-          ip    = request.remote_ip
+          ip    = request.remote_ip || request.ip
 
           perform_check = self.class.allow_loopback? ? (code != "N/A") : true
 
