@@ -1,5 +1,9 @@
 IpFilter
 
+v0.7.2
+
+All cached objects return an OpenStruct.
+
 v0.7.1
 
 Fix bad ip adress definition (remote_ip = nil)
