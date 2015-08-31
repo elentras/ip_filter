@@ -16,7 +16,7 @@ module IpFilter
 
     def serialize_output(value)
       if !value.nil? && value != 'null'
-        value = JSON.parse(value)
+        value = JSON.parse(value) if value.is_a? String
         return OpenStruct.new(value)
       end
       return nil
