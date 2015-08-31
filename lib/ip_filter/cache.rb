@@ -14,6 +14,14 @@ module IpFilter
       @cached_at ||= DateTime.now
     end
 
+    def serialize_output(value)
+      if !value.nil? && value != 'null'
+        value = JSON.parse(value)
+        return OpenStruct.new(value)
+      end
+      return nil
+    end
+
     # Cache key for a given URL.
     def key_for(ip)
       [prefix, ip].join

@@ -17,7 +17,8 @@ module IpFilter
           when store.respond_to?(:get)
             store.get key_for(ip)
         end
-        value = JSON.parse(value) if value
+        # this method is inherited from IpFilter::Cache
+        serialize_output(result)
       end
 
       # Write to the Cache.

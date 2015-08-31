@@ -12,10 +12,8 @@ module IpFilter
       # Read from the Cache.
       def [](ip)
         value = store.get(key_for(ip))
-        if !value.nil? && value != 'null'
-          return JSON.parse(value)
-        end
-        return nil
+        # this method is inherited from IpFilter::Cache
+        serialize_output(value)
       end
 
       # Write to the Cache.

@@ -50,8 +50,8 @@ describe IpFilter::Cache::Redis do
     it "should return result from cache" do
       subject["55.10.220.10"] = { this: 'is a test'}
       result = subject["55.10.220.10"]
-      expect(result).not_to be_empty
-      expect(result).to eq({"this" => 'is a test'})
+
+      expect(result.to_h).to eq({this: 'is a test'})
     end
   end
 
