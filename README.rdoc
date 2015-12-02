@@ -1,11 +1,12 @@
 = IpFilter
 
-IpFilter is IP filtering solution for Ruby. Common use case for this is DRM. Uses a GeoIP (or Geo::IP) database to determine the request ip's location.
+IpFilter is IP filtering solution for Ruby. Common use case for this is DRM.
+Uses a GeoIP (or Geo::IP) database to determine the request ip's location.
 
 
 == Compatibility
 
-* Supports Ruby version: 1.9.2, 2.2.0
+* Supports Ruby version: 1.9.2 to 2.2.0
 * Supports cache store: Memcache, Redis.
 * Supports Rails 3.
 
@@ -221,8 +222,9 @@ This returns an array of <tt>IpFilter::Result</tt> objects. Please see above and
 
 == Contributors
 
-Ihor Ratsyborynskyy
-Jeremy Mortelette
+Jeremy Le Massu
+
+Based on Chris Trinh gem, helped by Ihor Ratsyborynskyy.
 
 == Acknowledgements
 
