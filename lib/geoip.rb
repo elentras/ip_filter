@@ -24,7 +24,7 @@
 # = SYNOPSIS
 #
 #   require 'geoip'
-#   p GeoIP.new('/usr/share/GeoIP/GeoIP.dat').country("www.netscape.sk")
+#   p GeoIP.new('/usr/share/GeoIP/GeoIP.dat').country('www.netscape.sk')
 #
 # = DESCRIPTION
 #
@@ -54,28 +54,30 @@ require 'yaml'
 class GeoIP
 
   # The GeoIP GEM version number
-  VERSION = "1.1.2"
+  VERSION = '1.1.2'
 
   # The +data/+ directory for geoip
-  DATA_DIR = File.expand_path(File.join(File.dirname(__FILE__),'..','data','geoip'))
+  DATA_DIR = File.expand_path(
+    File.join(File.dirname(__FILE__), '..', 'data', 'geoip')
+  )
 
   # Ordered list of the ISO3166 2-character country codes, ordered by
   # GeoIP ID
-  CountryCode = YAML.load_file(File.join(DATA_DIR,'country_code.yml'))
+  CountryCode = YAML.load_file(File.join(DATA_DIR, 'country_code.yml'))
 
   # Ordered list of the ISO3166 3-character country codes, ordered by
   # GeoIP ID
-  CountryCode3 = YAML.load_file(File.join(DATA_DIR,'country_code3.yml'))
+  CountryCode3 = YAML.load_file(File.join(DATA_DIR, 'country_code3.yml'))
 
   # Ordered list of the English names of the countries, ordered by GeoIP ID
-  CountryName = YAML.load_file(File.join(DATA_DIR,'country_name.yml'))
+  CountryName = YAML.load_file(File.join(DATA_DIR, 'country_name.yml'))
 
   # Ordered list of the ISO3166 2-character continent code of the countries,
   # ordered by GeoIP ID
-  CountryContinent = YAML.load_file(File.join(DATA_DIR,'country_continent.yml'))
+  CountryContinent = YAML.load_file(File.join(DATA_DIR, 'country_continent.yml'))
 
   # Hash of the timezone codes mapped to timezone name, per zoneinfo
-  TimeZone = YAML.load_file(File.join(DATA_DIR,'time_zone.yml'))
+  TimeZone = YAML.load_file(File.join(DATA_DIR, 'time_zone.yml'))
 
   GEOIP_COUNTRY_EDITION = 1
   GEOIP_CITY_EDITION_REV1 = 2
@@ -88,9 +90,9 @@ class GeoIP
   GEOIP_ASNUM_EDITION = 9
   GEOIP_NETSPEED_EDITION = 10
 
-  COUNTRY_BEGIN = 16776960          #:nodoc:
-  STATE_BEGIN_REV0 = 16700000       #:nodoc:
-  STATE_BEGIN_REV1 = 16000000       #:nodoc:
+  COUNTRY_BEGIN = 16_776_960          #:nodoc:
+  STATE_BEGIN_REV0 = 16_700_000       #:nodoc:
+  STATE_BEGIN_REV1 = 16_000_000       #:nodoc:
   STRUCTURE_INFO_MAX_SIZE = 20      #:nodoc:
   DATABASE_INFO_MAX_SIZE = 100      #:nodoc:
   MAX_ORG_RECORD_LENGTH = 300       #:nodoc:
@@ -105,20 +107,16 @@ class GeoIP
   SEGMENT_RECORD_LENGTH = 3         #:nodoc:
 
   class Country < Struct.new(:request, :ip, :country_code, :country_code2, :country_code3, :country_name, :continent_code)
-
     def to_hash
       Hash[each_pair.to_a].each_with_object({}) { |(k,v), h| h[k.to_sym] = v }
     end
-
   end
 
   class City < Struct.new(:request, :ip, :country_code2, :country_code3, :country_name, :continent_code,
                           :region_name, :city_name, :postal_code, :latitude, :longitude, :dma_code, :area_code, :timezone)
-
     def to_hash
       Hash[each_pair.to_a].each_with_object({}) { |(k,v), h| h[k.to_sym] = v }
     end
-
   end
 
   class ASN < Struct.new(:number, :asn)
@@ -136,9 +134,7 @@ class GeoIP
   # +options+ is an integer holding caching flags (unimplemented)
   #
   def initialize(filename, flags = 0)
-    @mutex = unless IO.respond_to?(:pread)
-               Mutex.new
-             end
+    @mutex = Mutex.new unless IO.respond_to?(:pread)
 
     @flags = flags
     @database_type = GEOIP_COUNTRY_EDITION
@@ -168,8 +164,8 @@ class GeoIP
   # * The two-character continent code
   #
   def country(hostname)
-    if (@database_type == GEOIP_CITY_EDITION_REV0 ||
-        @database_type == GEOIP_CITY_EDITION_REV1)
+    if @database_type == GEOIP_CITY_EDITION_REV0 ||
+       @database_type == GEOIP_CITY_EDITION_REV1
       return city(hostname)
     end
 
@@ -178,10 +174,10 @@ class GeoIP
     # Convert numeric IP address to an integer
     ipnum = iptonum(ip)
 
-    if (@database_type != GEOIP_COUNTRY_EDITION &&
-        @database_type != GEOIP_PROXY_EDITION &&
-        @database_type != GEOIP_NETSPEED_EDITION)
-      throw "Invalid GeoIP database type, can't look up Country by IP"
+    if @database_type != GEOIP_COUNTRY_EDITION &&
+       @database_type != GEOIP_PROXY_EDITION &&
+       @database_type != GEOIP_NETSPEED_EDITION
+      throw 'Invalid GeoIP database type, can\'t look up Country by IP'
     end
 
     code = (seek_record(ipnum) - COUNTRY_BEGIN)
@@ -224,9 +220,9 @@ class GeoIP
     # Convert numeric IP address to an integer
     ipnum = iptonum(ip)
 
-    if (@database_type != GEOIP_CITY_EDITION_REV0 &&
-        @database_type != GEOIP_CITY_EDITION_REV1)
-      throw "Invalid GeoIP database type, can't look up City by IP"
+    if @database_type != GEOIP_CITY_EDITION_REV0 &&
+       @database_type != GEOIP_CITY_EDITION_REV1
+      throw 'Invalid GeoIP database type, can\'t look up City by IP'
     end
 
     pos = seek_record(ipnum)
@@ -240,7 +236,7 @@ class GeoIP
     # If you're concerned, email me, and I'll send you the test program so
     # you can test whatever IP range you think is causing problems,
     # as I don't care to undertake an exhaustive search of the 32-bit space.
-    unless pos == @database_segments[0]
+    if pos != @database_segments[0]
       read_city(pos, hostname, ip)
     end
   end
@@ -260,13 +256,13 @@ class GeoIP
     # Convert numeric IP address to an integer
     ipnum = iptonum(ip)
 
-    if (@database_type != GEOIP_ISP_EDITION &&
-        @database_type != GEOIP_ORG_EDITION)
-      throw "Invalid GeoIP database type, can't look up Organization/ISP by IP"
+    if @database_type != GEOIP_ISP_EDITION &&
+        @database_type != GEOIP_ORG_EDITION
+      throw 'Invalid GeoIP database type, can\'t look up Organization/ISP by IP'
     end
 
     pos = seek_record(ipnum)
-    off = pos + (2*@record_length - 1) * @database_segments[0]
+    off = pos + (2 * @record_length - 1) * @database_segments[0]
 
     record = atomic_read(MAX_ORG_RECORD_LENGTH, off)
     record = record.sub(/\000.*/n, '')
@@ -291,11 +287,11 @@ class GeoIP
     ipnum = iptonum(ip)
 
     if (@database_type != GEOIP_ASNUM_EDITION)
-      throw "Invalid GeoIP database type, can't look up ASN by IP"
+      throw 'Invalid GeoIP database type, can\'t look up ASN by IP'
     end
 
     pos = seek_record(ipnum)
-    off = pos + (2*@record_length - 1) * @database_segments[0]
+    off = pos + (2 * @record_length - 1) * @database_segments[0]
 
     record = atomic_read(MAX_ASN_RECORD_LENGTH, off)
     record = record.sub(/\000.*/n, '')
@@ -318,21 +314,21 @@ class GeoIP
   def each
     return enum_for unless block_given?
 
-    if (@database_type != GEOIP_CITY_EDITION_REV0 &&
-        @database_type != GEOIP_CITY_EDITION_REV1)
-      throw "Invalid GeoIP database type, can't iterate thru non-City database"
+    if @database_type != GEOIP_CITY_EDITION_REV0 &&
+       @database_type != GEOIP_CITY_EDITION_REV1
+      throw 'Invalid GeoIP database type, can\'t iterate thru non-City database'
     end
 
     @iter_pos = @database_segments[0] + 1
     num = 0
 
-    until ((rec = read_city(@iter_pos)).nil?)
+    until (rec = read_city(@iter_pos)).nil?
       yield rec
-      print "#{num}: #{@iter_pos}\n" if((num += 1) % 1000 == 0)
+      print "#{num}: #{@iter_pos}\n" if ((num += 1) % 1000) == 0
     end
 
     @iter_pos = nil
-    return self
+    self
   end
 
   private
@@ -351,25 +347,25 @@ class GeoIP
 
         @database_type -= 105 if @database_type >= 106
 
-        if (@database_type == GEOIP_REGION_EDITION_REV0)
+        if @database_type == GEOIP_REGION_EDITION_REV0
           # Region Edition, pre June 2003
           @database_segments = [STATE_BEGIN_REV0]
-        elsif (@database_type == GEOIP_REGION_EDITION_REV1)
+        elsif @database_type == GEOIP_REGION_EDITION_REV1
           # Region Edition, post June 2003
           @database_segments = [STATE_BEGIN_REV1]
-        elsif (@database_type == GEOIP_CITY_EDITION_REV0 ||
-               @database_type == GEOIP_CITY_EDITION_REV1 ||
-               @database_type == GEOIP_ORG_EDITION ||
-               @database_type == GEOIP_ISP_EDITION ||
-               @database_type == GEOIP_ASNUM_EDITION)
+        elsif @database_type == GEOIP_CITY_EDITION_REV0 ||
+              @database_type == GEOIP_CITY_EDITION_REV1 ||
+              @database_type == GEOIP_ORG_EDITION ||
+              @database_type == GEOIP_ISP_EDITION ||
+              @database_type == GEOIP_ASNUM_EDITION
 
           # City/Org Editions have two segments, read offset of second segment
           @database_segments = [0]
-          sr = @file.read(3).unpack("C*")
+          sr = @file.read(3).unpack('C*')
           @database_segments[0] += le_to_ui(sr)
 
-          if (@database_type == GEOIP_ORG_EDITION ||
-              @database_type == GEOIP_ISP_EDITION)
+          if @database_type == GEOIP_ORG_EDITION ||
+             @database_type == GEOIP_ISP_EDITION
             @record_length = 4
           end
         end
@@ -380,9 +376,9 @@ class GeoIP
       end
     end
 
-    if (@database_type == GEOIP_COUNTRY_EDITION ||
-        @database_type == GEOIP_PROXY_EDITION ||
-        @database_type == GEOIP_NETSPEED_EDITION)
+    if @database_type == GEOIP_COUNTRY_EDITION ||
+       @database_type == GEOIP_PROXY_EDITION ||
+       @database_type == GEOIP_NETSPEED_EDITION
       @database_segments = [COUNTRY_BEGIN]
     end
   end
@@ -404,10 +400,10 @@ class GeoIP
   # * The timezone name, if known
   #
   def read_city(pos, hostname = '', ip = '') #:nodoc:
-    off = pos + (2*@record_length - 1) * @database_segments[0]
+    off = pos + (2 * @record_length - 1) * @database_segments[0]
     record = atomic_read(FULL_RECORD_LENGTH, off)
 
-    return unless (record && record.size == FULL_RECORD_LENGTH)
+    return unless record && record.size == FULL_RECORD_LENGTH
 
     # The country code is the first byte:
     code = record[0]
@@ -433,8 +429,8 @@ class GeoIP
     record = spl[3]
 
     # Get the latitude/longitude:
-    if (record && record[0,3])
-      latitude  = (le_to_ui(record[0,3].unpack('C*')) / 10000.0) - 180
+    if record && record[0, 3]
+      latitude = (le_to_ui(record[0, 3].unpack('C*')) / 10000.0) - 180
       record = record[3..-1]
 
       @iter_pos += 3 unless @iter_pos.nil?
@@ -442,8 +438,8 @@ class GeoIP
       latitude = ''
     end
 
-    if (record && record[0,3])
-      longitude = le_to_ui(record[0,3].unpack('C*')) / 10000.0 - 180
+    if record && record[0, 3]
+      longitude = le_to_ui(record[0, 3].unpack('C*')) / 10000.0 - 180
       record = record[3..-1]
 
       @iter_pos += 3 unless @iter_pos.nil?
@@ -452,10 +448,10 @@ class GeoIP
     end
 
     # UNTESTED
-    if (record &&
-        record[0,3] &&
-        @database_type == GEOIP_CITY_EDITION_REV1 &&
-        CountryCode[code] == "US")
+    if record &&
+       record[0,3] &&
+       @database_type == GEOIP_CITY_EDITION_REV1 &&
+       CountryCode[code] == 'US'
 
       dmaarea_combo = le_to_ui(record[0,3].unpack('C*'))
       dma_code = (dmaarea_combo / 1000)
@@ -463,7 +459,8 @@ class GeoIP
 
       @iter_pos += 3 unless @iter_pos.nil?
     else
-      dma_code, area_code = nil, nil
+      dma_code = nil
+      area_code = nil
     end
 
     City.new(
@@ -480,12 +477,15 @@ class GeoIP
       longitude,
       dma_code,
       area_code,
-      (TimeZone["#{CountryCode[code]}#{region}"] || TimeZone["#{CountryCode[code]}"])
+      (TimeZone["#{CountryCode[code]}#{region}"] ||
+       TimeZone["#{CountryCode[code]}"])
     )
   end
 
   def lookup_ip(ip_or_hostname) # :nodoc:
-    return ip_or_hostname unless (ip_or_hostname.kind_of?(String) && ip_or_hostname !~ /^[0-9.]+$/)
+    unless ip_or_hostname.is_a?(String) && ip_or_hostname !~ /^[0-9.]+$/
+      return ip_or_hostname
+    end
 
     # Lookup IP address, we were given a name
     ip = IPSocket.getaddress(ip_or_hostname)
@@ -495,14 +495,14 @@ class GeoIP
 
   # Convert numeric IP address to Integer.
   def iptonum(ip) #:nodoc:
-    if (ip.kind_of?(String) &&
-        ip =~ /^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/)
-      ip = be_to_ui(Regexp.last_match().to_a.slice(1..4))
+    if ip.is_a?(String) &&
+       ip =~ %r{/^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/}
+      ip = be_to_ui(Regexp.last_match.to_a.slice(1..4))
     else
       ip = ip.to_i
     end
 
-    return ip
+    ip
   end
 
   def seek_record(ipnum) #:nodoc:
@@ -516,9 +516,9 @@ class GeoIP
       buf = atomic_read(@record_length * 2, off)
 
       buf.slice!(0...@record_length) if ((ipnum & mask) != 0)
-      offset = le_to_ui(buf[0...@record_length].unpack("C*"))
+      offset = le_to_ui(buf[0...@record_length].unpack('C*'))
 
-      if (offset >= @database_segments[0])
+      if offset >= @database_segments[0]
         return offset
       end
 
@@ -532,9 +532,8 @@ class GeoIP
   #
   def be_to_ui(s) #:nodoc:
     i = 0
-
     s.each { |b| i = ((i << 8) | (b.to_i & 0x0ff)) }
-    return i
+    i
   end
 
   # Same for little-endian
@@ -544,7 +543,7 @@ class GeoIP
 
   # reads +length+ bytes from +offset+ as atomically as possible
   # if IO.pread is available, it'll use that (making it both multithread
-  # and multiprocess-safe). Otherwise we'll use a mutex to synchronize
+  # and multiprocess-safe). Otherwise we will use a mutex to synchronize
   # access (only providing protection against multiple threads, but not
   # file descriptors shared across multiple processes).
   def atomic_read(length, offset) #:nodoc:
@@ -557,5 +556,4 @@ class GeoIP
       IO.pread(@file.fileno, length, offset)
     end
   end
-
 end

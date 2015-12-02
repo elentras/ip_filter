@@ -8,5 +8,4 @@ describe IpFilter::Providers::MaxMind do
   it { expect respond_to(:config).with(0).argument }
   it { expect respond_to(:folder).with(0).argument }
   it { expect respond_to(:refresh_file_list).with(0).argument }
-
 end

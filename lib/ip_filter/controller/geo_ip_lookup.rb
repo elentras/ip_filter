@@ -1,7 +1,6 @@
 module IpFilter
   module Controller
     module GeoIpLookup
-
       # Mix below class methods into ActionController.
       def self.included(base)
         base.send :include, InstanceMethods
@@ -31,11 +30,11 @@ module IpFilter
         end
 
         def codes
-          IpFilter.configuration.ip_codes.call
+          IpFilter.configuration.ip_codes
         end
 
         def whitelist
-          IpFilter.configuration.ip_whitelist.call
+          IpFilter.configuration.ip_whitelist
         end
 
         def allow_loopback?
@@ -53,7 +52,7 @@ module IpFilter
           code  = request.location[self.class.code_type]
           ip    = request.remote_ip || request.ip
 
-          perform_check = self.class.allow_loopback? ? (code != "N/A") : true
+          perform_check = self.class.allow_loopback? ? (code != 'N/A') : true
 
           if perform_check
             unless valid_code?(code) || valid_ip?(ip)
@@ -67,16 +66,13 @@ module IpFilter
         end
 
         def valid_ip?(ip)
-          #go through each IP range and validate IP against it
+          # go through each IP range and validate IP against it
           Array.wrap(self.class.whitelist).any? do |ip_range|
-            IPAddr.new(ip_range).include?( ip )
+            IPAddr.new(ip_range).include?(ip)
           end
         end
-
       end
-
-
-      #end of module
+      # end of module
     end
   end
 end

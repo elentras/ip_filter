@@ -41,7 +41,7 @@ module IpFilter
           puts 'First, add the maxmind ppa repository: `add-apt-repository ppa:maxmind/ppa`'
           puts 'Next, update your package list: `apt-get update`'
           puts 'Finally, setup the package: `apt-get install geoipupdate`'
-          raise "Missing binary : geoipupdate"
+          raise 'Missing binary : geoipupdate'
         end
         return true
       end

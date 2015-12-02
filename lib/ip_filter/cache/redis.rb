@@ -1,4 +1,4 @@
-require "json"
+require 'json'
 
 module IpFilter
   class Cache
@@ -6,7 +6,7 @@ module IpFilter
 
       def reset
         keys = store.keys("#{@prefix}*")
-        store.del keys if not keys.empty?
+        store.del keys unless keys.empty?
       end
 
       # Read from the Cache.

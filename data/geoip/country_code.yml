@@ -1,5 +1,5 @@
 # Ordered list of the ISO3166 2-character country codes, ordered by GeoIP ID
---- 
+---
 - --
 - AP
 - EU
@@ -162,7 +162,7 @@
 - NG
 - NI
 - NL
-- "NO"
+- 'NO'
 - NP
 - NR
 - NU

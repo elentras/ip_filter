@@ -1,5 +1,5 @@
 # Hash of the timezone codes mapped to timezone name, per zoneinfo
---- 
+---
 UA18: Europe/Zaporozhye
 NZG1: Pacific/Auckland
 KZ12: Asia/Qyzylorda
@@ -121,7 +121,7 @@ UZ08: Asia/Samarkand
 RU76: Europe/Moscow
 RU29: Asia/Novokuznetsk
 ES27: Europe/Madrid
-"NO": Europe/Oslo
+'NO': Europe/Oslo
 BR28: America/Maceio
 CN06: Asia/Chongqing
 IR: Asia/Tehran

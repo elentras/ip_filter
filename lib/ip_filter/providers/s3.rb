@@ -9,8 +9,8 @@ module IpFilter
       def initialize
         @bucket_name = IpFilter.configuration.s3_bucket_name
         AWS.config(
-          :access_key_id => IpFilter.configuration.s3_access_key_id,
-          :secret_access_key => IpFilter.configuration.s3_secret_access_key
+          access_key_id: IpFilter.configuration.s3_access_key_id,
+          secret_access_key: IpFilter.configuration.s3_secret_access_key
         )
         @remote = AWS::S3.new
         @bucket = create_bucket
@@ -29,8 +29,8 @@ module IpFilter
       def upload!
         IpFilter.database_files.each do |file|
           file_name = File.basename(file)
-          obj = @bucket.objects[file_name].write(:file => file)
-          urls[file_name] = obj.url_for(:read, expires: Time.now.to_i + 840000)
+          obj = @bucket.objects[file_name].write(file: file)
+          urls[file_name] = obj.url_for(:read, expires: Time.now.to_i + 840_000)
         end
         urls
       end

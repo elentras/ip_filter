@@ -17,7 +17,7 @@ Uses a GeoIP (or Geo::IP) database to determine the request ip's location.
 
 Add to your Gemfile:
 
-  gem "ip_filter"
+  gem 'ip_filter'
 
 and run at the command prompt:
 
@@ -37,23 +37,23 @@ At the command prompt:
 
   IpFilter.configure do |config|
     # Location of GeoIP database files.
-    config.data_folder = "lib/assets/"
+    config.data_folder = 'lib/assets/'
 
     # Level of filtering : Country, city...
     config.geoip_level = 'country'
 
     # Type of ip country code to compare by.
-    config.ip_code_type = "country_code2"
+    config.ip_code_type = 'country_code2'
 
     # Accepts a proc that must return an array with corresponding format as :ip_code_type
-    config.ip_codes = Proc.new { ["FI", "US", "GB"] }
+    config.ip_codes = Proc.new { ['FI', 'US', 'GB'] }
 
     # Accepts a proc that must return an array of IPs or IP range to
-    config.ip_whitelist = Proc.new { ["22.33.11.0/24", "2.3.1.4"] }
+    config.ip_whitelist = Proc.new { ['22.33.11.0/24', '2.3.1.4'] }
 
     # Exception to throw when IP is NOT allowed.
     # Accepts a Proc for fine-grain control of the appropriate response.
-    config.ip_exception = Proc.new { raise Api::Exception::AuthorizationError.new("You region is blocked!") }
+    config.ip_exception = Proc.new { raise Api::Exception::AuthorizationError.new('You region is blocked!') }
 
     # Cache object (Memcache or Redis).
     config.cache = Rails.cache
@@ -76,7 +76,7 @@ At the command prompt:
 
 === Default Values
 
-+data_folder+           : "/tmp/geoip"
++data_folder+           : '/tmp/geoip'
 
 +geo_ip_dat+            : data/GeoIP.dat
 
@@ -121,7 +121,7 @@ Add the following method to any controller to validate the <tt>Request#ip</tt>.
 You can also pass a block (with filter options) to be executed when validation of ip fails like so (defaults to <tt>IpFilter::Configuration.ip_exception</tt> proc if no block present):
 
   validate_ip do
-    raise Exception.new "Sorry access not granted!"
+    raise Exception.new 'Sorry access not granted!'
   end
 
 By default, loopback/private network addresses are allowed. You can disable this in like so:
@@ -142,7 +142,7 @@ validation.
 
 Internally it is just <tt>skip_before_filter</tt> so filter options can be pass to it as well.
 
-  skip_validate_ip :only => [:index, :show], :if => lambda { account.roles == "admin" }
+  skip_validate_ip :only => [:index, :show], :if => lambda { account.roles == 'admin' }
 
 
 == Request Geocoding by IP Address
@@ -152,7 +152,7 @@ IpFilter adds a +location+ method to the standard <tt>Rack::Request</tt> object 
   # returns IpFilter::Result object
   result = request.location
 
-See "Advanced Geocoding" below for more information about IpFilter::Result objects.
+See 'Advanced Geocoding' below for more information about IpFilter::Result objects.
 
 
 == Advanced Geocoding
@@ -204,7 +204,7 @@ Currently only Memcache and redis are supported.
 You can also set a custom prefix to be used for cache keys:
 
   IpFilter.configure do |config|
-    config.cache_prefix = "whatever:"
+    config.cache_prefix = 'whatever:'
   end
 
 By default the prefix is <tt>ip_filter:</tt>
@@ -216,7 +216,7 @@ By default the prefix is <tt>ip_filter:</tt>
 
 You can use IpFilter outside of Rails by calling the <tt>IpFilter.search</tt> method:
 
-  results = IpFilter.search("147.243.3.83")
+  results = IpFilter.search('147.243.3.83')
 
 This returns an array of <tt>IpFilter::Result</tt> objects. Please see above and in the code for details.
 

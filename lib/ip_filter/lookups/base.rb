@@ -3,7 +3,6 @@ require 'ipaddr'
 module IpFilter
   module Lookup
     class Base
-
       # A number of non-routable IP ranges.
       #
       # --
@@ -11,7 +10,7 @@ module IpFilter
       #   RFC 3330: Special-Use IPv4 Addresses
       #   The bogon list: http://www.cymru.com/Documents/bogon-list.html
       NON_ROUTABLE_IP_RANGES = [
-        IPAddr.new('0.0.0.0/8'),      # "This" Network
+        IPAddr.new('0.0.0.0/8'),      # 'This' Network
         IPAddr.new('10.0.0.0/8'),     # Private-Use Networks
         IPAddr.new('14.0.0.0/8'),     # Public-Data Networks
         IPAddr.new('127.0.0.0/8'),    # Loopback
@@ -24,14 +23,13 @@ module IpFilter
         IPAddr.new('240.0.0.0/4')     # Reserved for future use
       ].freeze
 
-
-      # Query the GeoIP database for a given IP address, and returns information about
-      # the region/country where the IP address is allocated.
+      # Query the GeoIP database for a given IP address, and returns information
+      # about the region/country where the IP address is allocated.
       #
-      # Takes a search string (eg: "205.128.54.202") for country info
+      # Takes a search string (eg: '205.128.54.202') for country info
       # Returns an array of <tt>IpFilter::Result</tt>s.
       def search(query)
-        results(query, false).map { |r| result_class.new(r) }
+        results(query).map { |r| result_class.new(r) }
       end
 
       private
@@ -43,7 +41,7 @@ module IpFilter
 
       # Class of the result objects.
       def result_class
-        IpFilter::Result.const_get(self.class.to_s.split(":").last)
+        IpFilter::Result.const_get(self.class.to_s.split(':').last)
       end
 
       # The working Cache object.

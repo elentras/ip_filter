@@ -13,5 +13,4 @@ describe IpFilter::Cache::DalliStore do
   it { expect respond_to(:reset).with(0).arguments }
   it { expect respond_to(:[]).with(1).arguments }
   it { expect respond_to(:[]=).with(2).arguments }
-
 end

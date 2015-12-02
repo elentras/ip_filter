@@ -25,34 +25,32 @@ describe IpFilter::Cache::Redis do
       IpFilter.search('200.10.220.10')
     end
 
-    let!(:keys) { IpFilter.configuration.cache.keys("ip_filter_test:*") }
+    let!(:keys) { IpFilter.configuration.cache.keys('ip_filter_test:*') }
 
-    it "should drop all existing cache keys" do
+    it 'should drop all existing cache keys' do
       subject.reset
       expect(
         subject.store.keys("#{prefix}*")
       ).to be_empty
     end
-
   end
 
   context '#[] (getter)' do
     let!(:post_saved_ip) { IpFilter.search('55.10.220.10') }
 
-    it "should return result from cache" do
+    it 'should return result from cache' do
       expected_cache = subject.store.keys("#{prefix}:55.10.220.10")
-      expect( expected_cache ).to be_empty
-      expect( expected_cache ).not_to include post_saved_ip
+      expect(expected_cache).to be_empty
+      expect(expected_cache).not_to include post_saved_ip
     end
   end
 
   context '#[]= (setter)' do
-    it "should return result from cache" do
-      subject["55.10.220.10"] = { this: 'is a test'}
-      result = subject["55.10.220.10"]
+    it 'should return result from cache' do
+      subject['55.10.220.10'] = { this: 'is a test' }
+      result = subject['55.10.220.10']
 
-      expect(result.to_h).to eq({this: 'is a test'})
+      expect(result.to_h).to eq(this: 'is a test')
     end
   end
-
 end

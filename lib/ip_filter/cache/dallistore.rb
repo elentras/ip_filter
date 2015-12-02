@@ -4,7 +4,8 @@ module IpFilter
 
       # Clean Cache (not available, as DalliStore cannot iterate on cache)
       def reset
-        logger.warning "Cannot reset ip_filter cache with DalliStore, you must reset all your cache manually."
+        logger.warning 'Cannot reset ip_filter cache with DalliStore,
+          you must reset all your cache manually.'
       end
 
       # Read from the Cache.
